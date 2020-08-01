@@ -41,7 +41,10 @@ class Board implements Ilayout, Cloneable {
         String s = "";
         for (int i = 0; i < dim; i++) {
             for (int j = 0; j < dim; j++) {
-                s += board[i][j];
+                if(board[i][j]!=0)
+                    s += board[i][j];
+                else
+                    s+=" ";
             }
             s += "\n";
         }
@@ -60,7 +63,7 @@ class Board implements Ilayout, Cloneable {
     @Override
     public List<Ilayout> children() throws CloneNotSupportedException  {
         List<Ilayout> c=new ArrayList<>();
-        int i=0,j=0;
+        int i=-1,j=-1;
         boolean p=false;
         for(i=0;i<dim;i++){
             for(j=0;j<dim;j++){
@@ -73,7 +76,7 @@ class Board implements Ilayout, Cloneable {
         }
         //System.out.println(i+" "+j);
        // System.out.println("---------------");
-        if(i-1>0){
+        if(i-1>=0){
             Board clone= (Board) clone();
             //System.out.println(clone+" inicial");
             clone.board[i][j]=board[i-1][j];
@@ -89,7 +92,7 @@ class Board implements Ilayout, Cloneable {
             //System.out.println(clone);
             c.add(clone);
         }
-        if(j-1>0){
+        if(j-1>=0){
             Board clone= (Board) clone();
             //System.out.println(clone+" inicial");
             clone.board[i][j]=board[i][j-1];
@@ -120,6 +123,15 @@ class Board implements Ilayout, Cloneable {
             }
         }
         return true;
+    }
+
+    @Override
+    public boolean equals(Object b){
+        if(b instanceof Board){
+            Board b1=(Board) b;
+            return isGoal(b1);
+        }
+        return false;
     }
 
     @Override

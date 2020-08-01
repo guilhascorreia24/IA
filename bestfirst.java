@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
-import javax.management.RuntimeErrorException;
+
 
 class BestFirst {
     static class State {
@@ -29,6 +29,15 @@ class BestFirst {
         public double getG() {
             return g;
         }
+
+        @Override
+        public boolean equals(Object b){
+            if(b instanceof State){
+                State b1=(State) b;
+                return layout.equals(b1.layout) && g==b1.g && father.equals(b1);
+            }
+            return false;
+        }
     }
 
     protected Queue<State> abertos;
@@ -47,31 +56,39 @@ class BestFirst {
     
     final public Iterator<State> solve(Ilayout s, Ilayout goal) throws CloneNotSupportedException {
         objective= goal;
-        Queue<State> abertos = new PriorityQueue<>(10, (s1, s2) -> (int) Math.signum(s1.getG()-s2.getG()));
-        List<State> fechados = new ArrayList<>();
+        abertos = new PriorityQueue<>(10, (s1, s2) -> (int) Math.signum(s1.getG()-s2.getG()));
+        fechados = new ArrayList<>();
         abertos.add(new State(s, null));
         actual=new State(s, null);
         List<State> sucs;
-        while(!goal.isGoal(actual.layout)){
-            //System.out.println(actual);
+        while(!goal.equals(actual.layout)){
             if(!abertos.isEmpty()){
-                actual=abertos.remove();
+                actual=abertos.poll();
             }
-            if(goal.isGoal(actual.layout))
+            if(goal.equals(actual.layout))
                 break;
-            fechados.add(actual);
+            else{
+                //System.out.println(actual);
             sucs = sucessores(actual);
+            fechados.add(actual);
             for(State s1:sucs){
                 //System.out.println(s1);
                 if(!fechados.contains(s1))
                     abertos.add(s1);
+            }}
+           // System.out.print("fechados:"+fechados+"\nabertos:"+abertos);
+            if(actual.getG()==12){
+                //System.out.println("fim"+actual.getG());
+                //System.out.println(actual);
+                //System.out.println(goal);
+                //System.out.println(sucs);
+                //System.out.println(goal.equals(actual.layout));
             }
-            //System.out.println("fim");
         }
-        abertos.clear();fechados.clear();
+        //abertos.clear();fechados.clear();
         List<State> l=new ArrayList<>();
         l.add(actual);
-        while(!actual.layout.isGoal(s)){
+        while(!actual.layout.equals(s)){
             actual=actual.father;
             l.add(actual);
         }
