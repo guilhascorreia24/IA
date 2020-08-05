@@ -11,15 +11,18 @@ class BestFirst {
     static class State {
         private Ilayout layout;
         private State father;
-        private double g;
+        private double g,h,f;
 
         public State(Ilayout l, State n) {
             layout = l;
             father = n;
-            if (father != null)
+            if (father != null){
                 g = father.g + l.getG();
-            else
+                }
+            else{
                 g = 0.0;
+            }
+            f=l.getF();h=l.getH();
         }
 
         public String toString() {
@@ -28,6 +31,14 @@ class BestFirst {
 
         public double getG() {
             return g;
+        }
+
+        public double getF(){
+            return f;
+        }
+
+        public double getH(){
+            return h;
         }
 
         @Override
@@ -56,7 +67,7 @@ class BestFirst {
     
     final public Iterator<State> solve(Ilayout s, Ilayout goal) throws CloneNotSupportedException {
         objective= goal;
-        abertos = new PriorityQueue<>(10, (s1, s2) -> (int) Math.signum(s1.getG()-s2.getG()));
+        abertos = new PriorityQueue<>(10, (s1, s2) -> (int) Math.signum(s1.getF()-s2.getF()));
         fechados = new ArrayList<>();
         abertos.add(new State(s, null));
         actual=new State(s, null);
@@ -75,6 +86,8 @@ class BestFirst {
                 //System.out.println(s1);
                 if(!fechados.contains(s1))
                     abertos.add(s1);
+                if(s1.layout.equals(objective))
+                    actual=s1;
             }}
            // System.out.print("fechados:"+fechados+"\nabertos:"+abertos);
             if(actual.getG()==12){

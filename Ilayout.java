@@ -15,11 +15,18 @@ interface Ilayout {
 
     /** @return the cost for moving from the input config to the receiver. */
     double getG();
+
+    double getF();
+
+    double getH();
+
+    void setG(double x);
 }
 
 class Board implements Ilayout, Cloneable {
     private static final int dim = 3;
     private int board[][];
+    private double g,f,h;
 
     public Board() {
         board = new int[dim][dim];
@@ -67,47 +74,83 @@ class Board implements Ilayout, Cloneable {
         boolean p=false;
         for(i=0;i<dim;i++){
             for(j=0;j<dim;j++){
-                if(board[i][j]==0){
-                    //System.out.println(i+" "+j);
-                    p=true;
-                    break;}
-            }
-            if(p) break;
-        }
         //System.out.println(i+" "+j);
-       // System.out.println("---------------");
-        if(i-1>=0){
+        // System.out.println("---------------");
             Board clone= (Board) clone();
             //System.out.println(clone+" inicial");
-            clone.board[i][j]=board[i-1][j];
-            clone.board[i-1][j]=0;
+            clone.board[i][j]=board[(dim-i-1)%dim][j];
+            clone.board[(dim-i-1)%dim][j]=board[i][j];
+            clone.setG(value_change(board[i][j],board[(dim-i-1)%dim][j]));
+            clone.setH(heuristc(i, j, (dim-i-1)%dim, j));
             //System.out.println(clone);
-            c.add(clone);
-        }
-        if(j+1<dim){
-            Board clone= (Board) clone();
+
+            if(!c.contains(clone))
+                c.add(clone);
+             clone= (Board) clone();
             //System.out.println(clone+" inicial");
-            clone.board[i][j]=board[i][j+1];
-            clone.board[i][j+1]=0;
+            clone.board[i][j]=board[i][(j+1)%dim];
+            clone.board[i][(j+1)%dim]=board[i][j];
+            clone.setG(value_change(board[i][j],board[i][(j+1)%dim]));
             //System.out.println(clone);
-            c.add(clone);
-        }
-        if(j-1>=0){
-            Board clone= (Board) clone();
+            if(!c.contains(clone))
+                c.add(clone);
+
+             clone= (Board) clone();
             //System.out.println(clone+" inicial");
-            clone.board[i][j]=board[i][j-1];
-            clone.board[i][j-1]=0;
+            clone.board[i][j]=board[i][(dim-j-1)%dim];
+            clone.board[i][(dim-j-1)%dim]=board[i][j];
+            clone.setG(value_change(board[i][j], board[i][(dim-j-1)%dim]));
             //System.out.println(clone);
-            c.add(clone);
-        }
-        if(i+1<dim){
-            Board clone= (Board) clone();
+            if(!c.contains(clone))
+                c.add(clone);
+
+             clone= (Board) clone();
             //System.out.println(this+" inicial");
-            clone.board[i][j]=board[i+1][j];
-            clone.board[i+1][j]=0;
+            clone.board[i][j]=board[(i+1)%dim][j];
+            clone.board[(i+1)%dim][j]=board[i][j];
+            clone.setG(value_change(board[i][j], board[(i+1)%dim][j]));
             //System.out.println(clone);
-            c.add(clone);
+            if(!c.contains(clone))
+                c.add(clone);
+
+            clone= (Board) clone();
+            //System.out.println(this+" inicial");
+            clone.board[i][j]=board[(i+1)%dim][(j+1)%dim];
+            clone.board[(i+1)%dim][(j+1)%dim]=board[i][j];
+            clone.setG(value_change(board[i][j], board[(i+1)%dim][(j+1)%dim]));
+            //System.out.println(clone);
+            if(!c.contains(clone))
+                c.add(clone);
+
+            clone= (Board) clone();
+            //System.out.println(this+" inicial");
+            clone.board[i][j]=board[(i+1)%dim][(dim-j-1)%dim];
+            clone.board[(i+1)%dim][(dim-j-1)%dim]=board[i][j];
+            clone.setG(value_change(board[i][j], board[(i+1)%dim][(dim-j-1)%dim]));
+            //System.out.println(clone);
+            if(!c.contains(clone))
+                c.add(clone);
+
+            clone= (Board) clone();
+            //System.out.println(this+" inicial");
+            clone.board[i][j]=board[(dim-i-1)%dim][(dim-j-1)%dim];
+            clone.board[(dim-i-1)%dim][(dim-j-1)%dim]=board[i][j];
+            clone.setG(value_change(board[i][j], board[(dim-i-1)%dim][(dim-j-1)%dim]));
+            //System.out.println(clone);
+            if(!c.contains(clone))
+                c.add(clone);
+
+            clone= (Board) clone();
+            //System.out.println(this+" inicial");
+            clone.board[i][j]=board[(dim-i-1)%dim][(j+1)%dim];
+            clone.board[(dim-i-1)%dim][(j+1)%dim]=board[i][j];
+            clone.setG(value_change(board[i][j], board[(dim-i-1)%dim][(j+1)%dim]));
+            //System.out.println(clone);
+            if(!c.contains(clone))
+                c.add(clone);
         }
+    }
+
         //System.out.println(c);
         //System.out.println("---------------");
         return c;
@@ -136,6 +179,44 @@ class Board implements Ilayout, Cloneable {
 
     @Override
     public double getG() {
-        return 1;
+        return g;
+    }
+
+    @Override
+    public void setG(double x){
+        this.g=x;
+    }
+
+    private double value_change(int ax,int ay,int bx,int by){
+        
+        if(board[ax][ay]%2!=0 && board[bx][by]%2!=0)
+            return 1;
+        else if()
+        else if(board[ax][ay]%2==0 && board[bx][by]%2==0)
+            return 20;
+        else
+            return 5;
+    }
+
+    @Override
+    public double getF(){
+        return g+h;
+    }
+
+    @Override
+    public double getH(){
+        return h;
+    }
+
+    public void setH(double h){
+        this.h=h;
+    }
+
+    public double heuristc(Board b){
+        for(int i=0;i<dim;i++){
+            for(int j=0;j<dim;j++){
+
+            }
+        }
     }
 }
