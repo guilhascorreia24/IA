@@ -6,7 +6,7 @@ interface Ilayout {
      * @return the children of the receiver.
      * @throws CloneNotSupportedException
      */
-    List<Ilayout> children() throws CloneNotSupportedException;
+    List<Ilayout> children(Ilayout objective) ;
 
     /**
      * @return true if the receiver equals the argumentl; return false otherwise.
@@ -26,7 +26,7 @@ interface Ilayout {
 class Board implements Ilayout, Cloneable {
     private static final int dim = 3;
     private int board[][];
-    private double g,f,h;
+    private double g,h;
 
     public Board() {
         board = new int[dim][dim];
@@ -59,7 +59,7 @@ class Board implements Ilayout, Cloneable {
     }
 
     @Override
-    protected Object clone() throws CloneNotSupportedException {
+    protected Object clone()  {
         Board clone=new Board();
         for(int i=0;i<dim;i++)
             for(int j=0;j<dim;j++)
@@ -68,10 +68,9 @@ class Board implements Ilayout, Cloneable {
     }
 
     @Override
-    public List<Ilayout> children() throws CloneNotSupportedException  {
+    public List<Ilayout> children(Ilayout objective)  {
         List<Ilayout> c=new ArrayList<>();
         int i=-1,j=-1;
-        boolean p=false;
         for(i=0;i<dim;i++){
             for(j=0;j<dim;j++){
         //System.out.println(i+" "+j);
@@ -81,7 +80,6 @@ class Board implements Ilayout, Cloneable {
             clone.board[i][j]=board[(dim-i-1)%dim][j];
             clone.board[(dim-i-1)%dim][j]=board[i][j];
             clone.setG(value_change(board[i][j],board[(dim-i-1)%dim][j]));
-            clone.setH(heuristc(i, j, (dim-i-1)%dim, j));
             //System.out.println(clone);
 
             if(!c.contains(clone))
@@ -187,15 +185,16 @@ class Board implements Ilayout, Cloneable {
         this.g=x;
     }
 
-    private double value_change(int ax,int ay,int bx,int by){
-        
-        if(board[ax][ay]%2!=0 && board[bx][by]%2!=0)
+    private double value_change(int a,int b){
+        if(a!=b){
+        if(a%2!=0 && b%2!=0)
             return 1;
-        else if()
-        else if(board[ax][ay]%2==0 && board[bx][by]%2==0)
-            return 20;
+        else if(a%2==0 && b%2==0)
+            return 15;
         else
             return 5;
+        }
+        return 0;
     }
 
     @Override
@@ -212,11 +211,15 @@ class Board implements Ilayout, Cloneable {
         this.h=h;
     }
 
-    public double heuristc(Board b){
+    public double heuristc(int x,int y,Board b){
         for(int i=0;i<dim;i++){
             for(int j=0;j<dim;j++){
-
+                if(board[x][y]==b.board[i][j]){
+                    board[x][y]=b.board[x][y];
+                    second.board[i][j]=
+                }
             }
         }
     }
+
 }

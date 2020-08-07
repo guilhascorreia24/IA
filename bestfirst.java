@@ -58,7 +58,7 @@ class BestFirst {
 
     final private List<State> sucessores(State n) throws CloneNotSupportedException {
         List<State> sucs = new ArrayList<>();
-        List<Ilayout> children = n.layout.children();
+        List<Ilayout> children = n.layout.children(objective);
         for(Ilayout e: children) {
             if(n.father== null|| !e.equals(n.father.layout)){
                 State nn = new State(e, n);sucs.add(nn);
