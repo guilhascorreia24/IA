@@ -13,7 +13,7 @@ class BestFirst {
         private State father;
         private double g,h,f;
 
-        public State(Ilayout l, State n) {
+        public State(Ilayout l, State n,Ilayout objective) {
             layout = l;
             father = n;
             if (father != null){
@@ -22,7 +22,8 @@ class BestFirst {
             else{
                 g = 0.0;
             }
-            f=l.getF();h=l.getH();
+            h=l.getH(objective);
+            f=l.getF();
         }
 
         public String toString() {
@@ -45,7 +46,7 @@ class BestFirst {
         public boolean equals(Object b){
             if(b instanceof State){
                 State b1=(State) b;
-                return layout.equals(b1.layout) && g==b1.g && father.equals(b1);
+                return layout.equals(b1.layout);
             }
             return false;
         }
@@ -54,6 +55,7 @@ class BestFirst {
     protected Queue<State> abertos;
     private List<State> fechados;
     private State actual;
+    private double max;
     private Ilayout objective;
 
     final private List<State> sucessores(State n) throws CloneNotSupportedException {
@@ -61,7 +63,7 @@ class BestFirst {
         List<Ilayout> children = n.layout.children(objective);
         for(Ilayout e: children) {
             if(n.father== null|| !e.equals(n.father.layout)){
-                State nn = new State(e, n);sucs.add(nn);
+                State nn = new State(e, n,objective);sucs.add(nn);
             }}
             return sucs;}
     
@@ -69,25 +71,33 @@ class BestFirst {
         objective= goal;
         abertos = new PriorityQueue<>(10, (s1, s2) -> (int) Math.signum(s1.getF()-s2.getF()));
         fechados = new ArrayList<>();
-        abertos.add(new State(s, null));
-        actual=new State(s, null);
+        actual=new State(s, null,objective);
+        abertos.add(actual);
+         max=actual.getH();
         List<State> sucs;
+        //System.out.println(actual.h);
         while(!goal.equals(actual.layout)){
             if(!abertos.isEmpty()){
-                actual=abertos.poll();
+                actual=abertos.remove();
+                //System.out.println(actual);
             }
             if(goal.equals(actual.layout))
                 break;
             else{
-                //System.out.println(actual);
+            //System.out.println(actual);
             sucs = sucessores(actual);
+            
             fechados.add(actual);
             for(State s1:sucs){
-                //System.out.println(s1);
+                if(actual.father==null){
+                    //System.out.println(s1+" "+s1.getG()+"+"+s1.getH());
+                }
+               // System.out.println(fechados.contains(s1));
                 if(!fechados.contains(s1))
                     abertos.add(s1);
-                if(s1.layout.equals(objective))
-                    actual=s1;
+                if(s1.layout.equals(objective)){
+                    //System.out.println("aqui");
+                    actual=s1;}
             }}
            // System.out.print("fechados:"+fechados+"\nabertos:"+abertos);
             if(actual.getG()==12){

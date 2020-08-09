@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 interface Ilayout {
@@ -6,7 +7,7 @@ interface Ilayout {
      * @return the children of the receiver.
      * @throws CloneNotSupportedException
      */
-    List<Ilayout> children(Ilayout objective) ;
+    List<Ilayout> children(Ilayout objective);
 
     /**
      * @return true if the receiver equals the argumentl; return false otherwise.
@@ -18,7 +19,7 @@ interface Ilayout {
 
     double getF();
 
-    double getH();
+    double getH(Ilayout b);
 
     void setG(double x);
 }
@@ -26,10 +27,40 @@ interface Ilayout {
 class Board implements Ilayout, Cloneable {
     private static final int dim = 3;
     private int board[][];
-    private double g,h;
+    private double g, h;
+    private HashMap<Integer, Ponto> list = new HashMap<Integer, Ponto>();
 
     public Board() {
         board = new int[dim][dim];
+    }
+
+    class Ponto {
+        private int x, y;
+
+        public Ponto(int x, int y) {
+            this.setX(x);
+            this.setY(y);
+        }
+
+        public int getY() {
+            return y;
+        }
+
+        public void setY(int y) {
+            this.y = y;
+        }
+
+        public int getX() {
+            return x;
+        }
+
+        public void setX(int x) {
+            this.x = x;
+        }
+
+        public String toString(){
+            return x+" "+y;
+        }
     }
 
     public Board(String str) throws IllegalStateException {
@@ -40,6 +71,7 @@ class Board implements Ilayout, Cloneable {
         for (int i = 0; i < dim; i++)
             for (int j = 0; j < dim; j++) {
                 board[i][j] = Character.getNumericValue(str.charAt(si++));
+                list.put(board[i][j], new Ponto(i,j));
             }
 
     }
@@ -58,12 +90,14 @@ class Board implements Ilayout, Cloneable {
         return s;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected Object clone()  {
         Board clone=new Board();
         for(int i=0;i<dim;i++)
             for(int j=0;j<dim;j++)
                 clone.board[i][j]=board[i][j];
+        clone.list= (HashMap<Integer, Ponto>) list.clone();
         return clone;
     }
 
@@ -82,16 +116,19 @@ class Board implements Ilayout, Cloneable {
             clone.setG(value_change(board[i][j],board[(dim-i-1)%dim][j]));
             //System.out.println(clone);
 
-            if(!c.contains(clone))
-                c.add(clone);
+            if(!c.contains(clone)){
+                c.add(clone);}
              clone= (Board) clone();
             //System.out.println(clone+" inicial");
             clone.board[i][j]=board[i][(j+1)%dim];
             clone.board[i][(j+1)%dim]=board[i][j];
             clone.setG(value_change(board[i][j],board[i][(j+1)%dim]));
             //System.out.println(clone);
-            if(!c.contains(clone))
+            if(!c.contains(clone)){
+                clone.h-=clone.g;
+                clone.heuristc(objective, i, j);
                 c.add(clone);
+            }
 
              clone= (Board) clone();
             //System.out.println(clone+" inicial");
@@ -99,8 +136,10 @@ class Board implements Ilayout, Cloneable {
             clone.board[i][(dim-j-1)%dim]=board[i][j];
             clone.setG(value_change(board[i][j], board[i][(dim-j-1)%dim]));
             //System.out.println(clone);
-            if(!c.contains(clone))
-                c.add(clone);
+            if(!c.contains(clone)){
+                clone.h-=clone.g;
+                clone.heuristc(objective, i, j);
+                c.add(clone);}
 
              clone= (Board) clone();
             //System.out.println(this+" inicial");
@@ -108,8 +147,10 @@ class Board implements Ilayout, Cloneable {
             clone.board[(i+1)%dim][j]=board[i][j];
             clone.setG(value_change(board[i][j], board[(i+1)%dim][j]));
             //System.out.println(clone);
-            if(!c.contains(clone))
-                c.add(clone);
+            if(!c.contains(clone)){
+                clone.h-=clone.g;
+                clone.heuristc(objective, i, j);
+                c.add(clone);}
 
             clone= (Board) clone();
             //System.out.println(this+" inicial");
@@ -117,8 +158,11 @@ class Board implements Ilayout, Cloneable {
             clone.board[(i+1)%dim][(j+1)%dim]=board[i][j];
             clone.setG(value_change(board[i][j], board[(i+1)%dim][(j+1)%dim]));
             //System.out.println(clone);
-            if(!c.contains(clone))
+            if(!c.contains(clone)){
+                clone.h-=clone.g;
+                clone.heuristc(objective, i, j);
                 c.add(clone);
+            }
 
             clone= (Board) clone();
             //System.out.println(this+" inicial");
@@ -126,8 +170,11 @@ class Board implements Ilayout, Cloneable {
             clone.board[(i+1)%dim][(dim-j-1)%dim]=board[i][j];
             clone.setG(value_change(board[i][j], board[(i+1)%dim][(dim-j-1)%dim]));
             //System.out.println(clone);
-            if(!c.contains(clone))
+            if(!c.contains(clone)){
+                clone.h-=clone.g;
+                clone.heuristc(objective, i, j);
                 c.add(clone);
+            }
 
             clone= (Board) clone();
             //System.out.println(this+" inicial");
@@ -135,8 +182,10 @@ class Board implements Ilayout, Cloneable {
             clone.board[(dim-i-1)%dim][(dim-j-1)%dim]=board[i][j];
             clone.setG(value_change(board[i][j], board[(dim-i-1)%dim][(dim-j-1)%dim]));
             //System.out.println(clone);
-            if(!c.contains(clone))
-                c.add(clone);
+            if(!c.contains(clone)){
+                clone.h-=clone.g;
+                clone.heuristc(objective, i, j);
+                c.add(clone);}
 
             clone= (Board) clone();
             //System.out.println(this+" inicial");
@@ -144,8 +193,10 @@ class Board implements Ilayout, Cloneable {
             clone.board[(dim-i-1)%dim][(j+1)%dim]=board[i][j];
             clone.setG(value_change(board[i][j], board[(dim-i-1)%dim][(j+1)%dim]));
             //System.out.println(clone);
-            if(!c.contains(clone))
-                c.add(clone);
+            if(!c.contains(clone)){
+                clone.h-=clone.g;
+                clone.heuristc(objective, i, j);
+                c.add(clone);}
         }
     }
 
@@ -156,21 +207,21 @@ class Board implements Ilayout, Cloneable {
 
     @Override
     public boolean isGoal(Ilayout l) {
-        Board b=(Board) l;
-        for(int i=0;i<dim;i++){
-            for(int j=0;j<dim;j++){
-                if(board[i][j]!=b.board[i][j])
-                    return false;
-            }
-        }
-        return true;
+        return equals(l);
     }
 
     @Override
-    public boolean equals(Object b){
-        if(b instanceof Board){
-            Board b1=(Board) b;
-            return isGoal(b1);
+    public boolean equals(Object b1){
+        if(b1 instanceof Board){
+            Board b=(Board) b1;
+            
+            for(int i=0;i<dim;i++){
+                for(int j=0;j<dim;j++){
+                    if(board[i][j]!=b.board[i][j])
+                        return false;
+                }
+            }
+            return true;
         }
         return false;
     }
@@ -189,10 +240,10 @@ class Board implements Ilayout, Cloneable {
         if(a!=b){
         if(a%2!=0 && b%2!=0)
             return 1;
-        else if(a%2==0 && b%2==0)
-            return 15;
-        else
+        else if(a%2!=0 && b%2==0 || a%2==0 && b%2!=0)
             return 5;
+        else
+            return 15;
         }
         return 0;
     }
@@ -203,23 +254,38 @@ class Board implements Ilayout, Cloneable {
     }
 
     @Override
-    public double getH(){
+    public double getH(Ilayout b){
+        for(int i=0;i<dim;i++){
+            for(int j=0;j<dim;j++){
+                heuristc(b, i, j);
+            }
+        }
         return h;
     }
 
-    public void setH(double h){
-        this.h=h;
-    }
-
-    public double heuristc(int x,int y,Board b){
-        for(int i=0;i<dim;i++){
-            for(int j=0;j<dim;j++){
-                if(board[x][y]==b.board[i][j]){
-                    board[x][y]=b.board[x][y];
-                    second.board[i][j]=
+    public void heuristc(Ilayout b1,int i,int j){
+        Board b=(Board) b1;
+        Board clone=(Board) clone();
+               // System.out.println(clone.board[i][j]+"@"+b.board[i][j]);
+                if(clone.board[i][j]==b.board[i][j]){}
+                else if(clone.board[i][j]%2!=0 && b.board[i][j]%2!=0)
+                    h+=1;
+                else if((clone.board[i][j]%2==0 && b.board[i][j]%2!=0) || (clone.board[i][j]%2!=0 && b.board[i][j]%2==0)){
+                    h+=5;
+                }else{
+                    h+=15;
                 }
-            }
-        }
+                //System.out.println(clone.list);
+
+                int u=clone.board[i][j];
+                Ponto p=clone.list.get(b.board[i][j]);
+                clone.board[p.x][p.y]=u;
+                clone.list.put(b.board[i][j],new Ponto(i,j));
+                clone.board[i][j]=b.board[i][j];
+                clone.list.put(u,new Ponto(p.x,p.y));
+        
+        //System.out.println(clone);
+        //return h;
     }
 
 }
