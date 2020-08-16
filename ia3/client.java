@@ -10,7 +10,7 @@ public class client {
         if(it==null) System.out.println("no solutionwas found");
         else{
             while(it.hasNext()) {BestFirst.State i = it.next();
-                //System.out.println(i.getG()+"\n"+i);
+                System.out.println(i.getG()+"\n"+i);
                 if(!it.hasNext()) System.out.println((int)i.getG());
             }
         }sc.close();}
