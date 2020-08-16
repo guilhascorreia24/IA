@@ -1,3 +1,5 @@
+package ia3;
+
 import java.util.Iterator;
 import java.util.Scanner;
 
@@ -9,7 +11,7 @@ public class client {
         else{
             while(it.hasNext()) {BestFirst.State i = it.next();
                 //System.out.println(i.getG()+"\n"+i);
-                if(!it.hasNext()) System.out.println(i.getG());
+                if(!it.hasNext()) System.out.println((int)i.getG());
             }
         }sc.close();}
             }
