@@ -34,7 +34,7 @@ class Board implements Ilayout, Cloneable {
     public Board(String str) throws IllegalStateException {
         String[] b2= str.split(" ");
         int blocks=0;
-        System.out.println(b2.length);
+       // System.out.println(b2.length);
         for(int i=0;i<b2.length;i++){
             if(!b2[i].equals("")){
                 int j=0;

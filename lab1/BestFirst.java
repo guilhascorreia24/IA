@@ -28,6 +28,10 @@ class BestFirst {
             return g;
         }
 
+        public boolean isGoal(Ilayout obj){
+            return this.layout.isGoal(obj);
+        }
+
         /*@Override
         public boolean equals( Object b){
              State b2=(State)b;
@@ -59,7 +63,7 @@ class BestFirst {
         actual=abertos.element();
         //System.out.println(s.toString());
         List<State> sucs;
-        while(!actual.layout.equals(goal)){
+        while(!actual.isGoal(goal)){
             //System.out.println(actual);
             if(abertos.isEmpty()){
                 throw new IllegalStateException("Fail");
@@ -79,6 +83,8 @@ class BestFirst {
             }
         }
         List<State> sol=new ArrayList<State>();
+        
+        //actual.layout=goal;
         while(actual!=null){
             sol.add(actual);
             actual=actual.father;

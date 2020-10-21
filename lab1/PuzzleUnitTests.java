@@ -1,4 +1,4 @@
-import static org.junit.Assert.assertEquals;
+/*import static org.junit.Assert.assertEquals;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -54,7 +54,7 @@ public class PuzzleUnitTests {
         assertEquals(b.toString(), writer.toString());
         pw.close();
     }
-    
+
     @Test(expected= IllegalStateException.class)
     public void testConstructor5() {
         Board b = new Board("A");
@@ -214,4 +214,4 @@ public class PuzzleUnitTests {
         Board b=new Board("A B C");
         assertEquals(b.clone(),b);
     }
-}
+}*/
