@@ -33,7 +33,41 @@ public class PuzzleUnitTests {
     }
 
     @Test
+    public void testConstructor3() {
+        Board b = new Board("A B C");
+        StringWriter writer = new StringWriter();
+        PrintWriter pw = new PrintWriter(writer);
+        pw.println("[A]");
+        pw.println("[B]");
+        pw.println("[C]");
+        pw.flush();
+        assertEquals(b.toString(), writer.toString());
+        pw.close();
+    }
+
+    @Test(expected= IllegalStateException.class)
+    public void testConstructor4() {
+        Board b = new Board("");
+        StringWriter writer = new StringWriter();
+        PrintWriter pw = new PrintWriter(writer);
+        pw.flush();
+        assertEquals(b.toString(), writer.toString());
+        pw.close();
+    }
+    
+    @Test(expected= IllegalStateException.class)
+    public void testConstructor5() {
+        Board b = new Board("A");
+        StringWriter writer = new StringWriter();
+        PrintWriter pw = new PrintWriter(writer);
+        pw.flush();
+        assertEquals(b.toString(), writer.toString());
+        pw.close();
+    }
+
+    @Test
     public void test() throws CloneNotSupportedException {
+        //long beforeUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
         Board b=new Board("CAB");
         Board b2=new Board("ABC");
         BestFirst s = new BestFirst();
@@ -47,6 +81,9 @@ public class PuzzleUnitTests {
             if (!it.hasNext())
                 assertEquals(4,(int)i.getG());
         }
+        //long afterUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+        //long actualMemUsed=afterUsedMem-beforeUsedMem;
+        //System.out.println(actualMemUsed+" "+beforeUsedMem);
     }
 
     @Test
@@ -73,9 +110,11 @@ public class PuzzleUnitTests {
         BestFirst s = new BestFirst();
         Iterator<BestFirst.State> it = s.solve(b,b2);
         List<Ilayout> prog=new ArrayList<>();
-        prog.add(new Board("A BC"));prog.add(new Board("A B C"));prog.add(new Board("C AB"));
+        prog.add(new Board("A BC"));prog.add(new Board("A B C"));prog.add(new Board("AB C"));
+        Iterator<Ilayout> it2=prog.iterator();
         while (it.hasNext()) {
             BestFirst.State i = it.next();
+            assertEquals(i.toString(),it2.next().toString());
             if (!it.hasNext())
                 assertEquals(2,(int)i.getG());
         }
@@ -83,27 +122,19 @@ public class PuzzleUnitTests {
 
     @Test
     public void test4() throws CloneNotSupportedException {
-        Board b2=new Board("ACB");
-        Board b=new Board("BCA");
+        Board b=new Board("ACB");
+        Board b2=new Board("BCA");
         BestFirst s = new BestFirst();
         Iterator<BestFirst.State> it = s.solve(b,b2);
+        List<Ilayout> prog=new ArrayList<>();
+        prog.add(new Board("ACB"));prog.add(new Board("AC B"));prog.add(new Board("A BC"));prog.add(new Board("BCA"));
+        Iterator<Ilayout> it2=prog.iterator();
         while (it.hasNext()) {
             BestFirst.State i = it.next();
+            //System.out.println(i);
+            assertEquals(i.toString(),it2.next().toString());
             if (!it.hasNext())
                 assertEquals(3,(int)i.getG());
-        }
-    }
-
-    @Test
-    public void test5() throws CloneNotSupportedException {
-        Board b=new Board("CAB");
-        Board b2=new Board("ABC");
-        BestFirst s = new BestFirst();
-        Iterator<BestFirst.State> it = s.solve(b,b2);
-        while (it.hasNext()) {
-            BestFirst.State i = it.next();
-            if (!it.hasNext())
-                assertEquals(4,(int)i.getG());
         }
     }
 

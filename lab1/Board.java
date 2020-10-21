@@ -33,15 +33,21 @@ class Board implements Ilayout, Cloneable {
 
     public Board(String str) throws IllegalStateException {
         String[] b2= str.split(" ");
+        int blocks=0;
+        System.out.println(b2.length);
         for(int i=0;i<b2.length;i++){
-            //System.out.println(b2[i].split("").length);
-            int j=0;
-            Stack<Character> line=new Stack<Character>();
-            while(j<b2[i].split("").length){
-                line.add(b2[i].charAt(j));
-                j++;
-            }
-            board.add(line);
+            if(!b2[i].equals("")){
+                int j=0;
+                Stack<Character> line=new Stack<Character>();
+                while(j<b2[i].split("").length){
+                    line.add(b2[i].charAt(j));
+                    j++;
+                }
+                board.add(line);
+            blocks+=j;}
+        }
+        if(blocks!=3){
+            throw new IllegalStateException("Invalid arg in Board constructor");
         }
        // dim=board.size();
         //System.out.println(board);
