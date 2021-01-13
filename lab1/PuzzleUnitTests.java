@@ -12,7 +12,7 @@ import org.junit.Test;
 public class PuzzleUnitTests {
     @Test
     public void testConstructor() {
-        Board b = new Board("AB C");
+        Board b = new Board("A C");
         StringWriter writer = new StringWriter();
         PrintWriter pw = new PrintWriter(writer);
         pw.println("[A, B]");

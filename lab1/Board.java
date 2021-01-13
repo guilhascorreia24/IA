@@ -46,9 +46,9 @@ class Board implements Ilayout, Cloneable {
                 board.add(line);
             blocks+=j;}
         }
-        if(blocks!=3){
+        /*if(blocks!=3){
             throw new IllegalStateException("Invalid arg in Board constructor");
-        }
+        }*/
        // dim=board.size();
         //System.out.println(board);
     }
@@ -93,7 +93,6 @@ class Board implements Ilayout, Cloneable {
     @Override
     public List<Ilayout> children() throws CloneNotSupportedException { // criar os filhos
         List<Ilayout> childs=new ArrayList<Ilayout>();
-        //System.out.println(this.board);
         for(int i=0;i<board.size();i++){
             if(!board.get(i).empty()){            
                 Board child=(Board) clone();
@@ -102,29 +101,17 @@ class Board implements Ilayout, Cloneable {
                 line.push(c);
                 child.board.add(line);
                 childs.add(child);
-                /*child=(Board) clone();
-                child.board.addFirst(line);
-                childs.add(child);*/
                 if(child.board.get(i).isEmpty()) child.board.remove(i);
                     for(int j=0;j<board.size();j++){
-                        
                         child=(Board) clone();
                         c=child.board.get(i).pop();
                         child.board.get(j).push(c);
                         if(!childs.contains(child)) childs.add(child);
                         if(child.board.get(i).isEmpty()) child.board.remove(i);
-                        
-                       /* child=(Board) clone();
-                        c=child.board.get(i).pop();
-                        if(j<board.size()-1){
-                            child.board.add(j+1,line);
-                        }
-                        if(!childs.contains(child)) childs.add(child);
-                        if(child.board.get(i).isEmpty()) child.board.remove(i);*/
                     } 
             }
         }
-        //System.out.println(childs);
+        //System.out.println(childs.size());
         return childs;
     }
 
