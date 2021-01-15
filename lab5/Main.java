@@ -6,7 +6,8 @@ public class Main {
         Algoritmo.generator = generator;
         Scanner sc = new Scanner(System.in);
         //F
-        //Algoritmo.Population f=new Algoritmo.Population(sc.nextInt(), sc.nextInt());System.out.print(f);
+        //Algoritmo.Population f=new Algoritmo.Population(sc.nextInt(), sc.nextInt());
+        //System.out.print(f);
         
         //G
         //Algoritmo.Individual g=new Algoritmo.Individual(sc.next());System.out.println(g.Onemax());
@@ -21,7 +22,8 @@ public class Main {
             fitnesses.add(sc.nextDouble());
         }
         I.setFitnesses(fitnesses);
-        System.out.print(Algoritmo.tournament(I));*/
+        System.out.print(Algoritmo.tournament(I,fitnesses.size(),0));*/
+
         //J
         /*Algoritmo.Population j=new Algoritmo.Population();
         while(sc.hasNext()){
@@ -30,6 +32,7 @@ public class Main {
             j.newIndividual(p);
         }
         System.out.print(Algoritmo.Rollete(j));*/
+
         //K
         /*Algoritmo.Population K=new Algoritmo.Population();
         while(sc.hasNext()){
@@ -40,18 +43,16 @@ public class Main {
         System.out.print(Algoritmo.SUS(K));*/
         
         //L
-        //Algoritmo.Individual parent1=new Algoritmo.Individual(sc.next());
-        //Algoritmo.Individual parent2=new Algoritmo.Individual(sc.next());
-        //System.out.print(Algoritmo.crossoverOnePoint(L1,L2));
+        /*Algoritmo.Individual parent1=new Algoritmo.Individual(sc.next());
+        Algoritmo.Individual parent2=new Algoritmo.Individual(sc.next());*/
+        //System.out.print(Algoritmo.crossoverOnePoint(parent1,parent2));
 
         //M
-        //Algoritmo.Individual parent1=new Algoritmo.Individual(sc.next());
-        //Algoritmo.Individual parent2=new Algoritmo.Individual(sc.next());
         //System.out.print(Algoritmo.uniformCrossover(parent1, parent2));
 
         //N
-        /*double pm=Double.parseDouble(sc.next());
-        Algoritmo.Individual parent2=new Algoritmo.Individual(sc.next());
+        //double pm=Double.parseDouble(sc.next());
+        /*Algoritmo.Individual parent2=new Algoritmo.Individual(sc.next());
         System.out.println(Algoritmo.bit_flip_mutation(parent2,pm));*/
 
         //O
@@ -61,7 +62,21 @@ public class Main {
         }*/
 
         //P
-        
+        /*int s=Integer.parseInt(sc.next());
+        Algoritmo.Population P=new Algoritmo.Population();
+        while(sc.hasNext()){
+            Algoritmo.Individual i=new Algoritmo.Individual(sc.next());
+            i.setFitness(Double.parseDouble(sc.next()));
+            P.newIndividual(i);
+        }
+        System.out.print(Algoritmo.TournamentSelectionWithoutReplacement(P, s));*/
+
+        //Q
+        Algoritmo.Population pop=new Algoritmo.Population(Integer.parseInt(sc.next()),Integer.parseInt(sc.next()));
+        int s=Integer.parseInt(sc.next());
+        double pm=Double.parseDouble(sc.next());
+        double pc=Double.parseDouble(sc.next());
+        double[][] Q=Algoritmo.OneGenerationOnOonemax(pop, s, pm, pc);
         sc.close();
     }
 }
