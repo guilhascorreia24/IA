@@ -1,3 +1,4 @@
+import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -13,15 +14,17 @@ public class Algoritmo {
 
         public Individual(String individual) {
             this.individual = individual;
+            fitness = Onemax();
         }
 
         public void setFitness(double fitness) {
             this.fitness = fitness;
         }
 
-        public int size(){
+        public int size() {
             return individual.split("").length;
         }
+
         public Individual() {
         };
 
@@ -75,6 +78,9 @@ public class Algoritmo {
                 else {
                     // System.out.println(i+" "+i/ChromosomeSize);
                     population.get(i / ChromosomeSize).individual += String.valueOf(h);
+                    if ((int) ((i + 1) / ChromosomeSize) != (int) (i / ChromosomeSize)) {
+                        population.get(i / ChromosomeSize).fitness = population.get(i / ChromosomeSize).Onemax();
+                    }
                 }
             }
         }
@@ -114,6 +120,23 @@ public class Algoritmo {
             return s;
         }
 
+        public List<Double> MaxAverageMin() {
+            List<Double> res = new ArrayList<>();
+            double min = Integer.MAX_VALUE, max = 0, med = 0;
+            for (Individual x : population) {
+                if (x.fitness > max)
+                    max = x.fitness;
+                if (x.fitness < min)
+                    min = x.fitness;
+                med += x.fitness;
+            }
+            // System.out.println(max+" "+min+" "+med/size_population);
+            res.add(max);
+            res.add(med / size_population);
+            res.add(min);
+            return res;
+        }
+
     }
 
     public static Population tournament(Population pop, int size_population, int inicial_population) {
@@ -125,7 +148,7 @@ public class Algoritmo {
                     + Math.round(generator.nextDouble() * (pop.size_population - 1 - inicial_population))));
             Individual individual2 = pop.population.get((int) (inicial_population
                     + Math.round(generator.nextDouble() * (pop.size_population - 1 - inicial_population))));
-            System.out.println(individual1 + " " + individual2);
+            //System.out.println(pop.population.indexOf(individual1) + " " + pop.population.indexOf(individual2));
             tournament_res.newIndividual(individual1.compareFitnesses(individual2));
             i++;
         }
@@ -202,14 +225,14 @@ public class Algoritmo {
     }
 
     public static Population crossoverOnePoint(Algoritmo.Individual parent1, Algoritmo.Individual parent2) {
-        int point_cross = (int) (0 + Math.round(generator.nextDouble() * (parent1.size() - 0)));
-        // System.out.println(point_cross);
+        int point_cross = (int) (1 + Math.round(generator.nextDouble() * (parent1.size() - 1 - 1)));
+        // System.out.println(point_cross+" "+parent1.size()+" "+parent2.size());
         String cross1 = parent1.individual.substring(point_cross, parent1.size());
         String cross2 = parent2.individual.substring(point_cross, parent2.size());
         Individual child1 = new Individual(parent1.individual.substring(0, point_cross) + cross2);
         Individual child2 = new Individual(parent2.individual.substring(0, point_cross) + cross1);
         Population pop = new Population();
-       // System.out.println(point_cross);
+        // System.out.println(point_cross);
         pop.newIndividual(child1);
         pop.newIndividual(child2);
         return pop;
@@ -238,11 +261,11 @@ public class Algoritmo {
         for (int i = 0; i < parent1.size(); i++) {
             double coin_toss = generator.nextDouble();
             if (coin_toss < pm) {
-                ;
                 child1.individual += (Integer.parseInt(parent1.individual.substring(i, i + 1)) == 0) ? 1 : 0;
             } else {
                 child1.individual += parent1.individual.substring(i, i + 1);
             }
+            child1.fitness = child1.Onemax();
         }
         return child1;
     }
@@ -291,37 +314,55 @@ public class Algoritmo {
         return clone2;
     }
 
-    public static double[][] OneGenerationOnOonemax(Population pop, int s, double pm, double pc)
+    public static Population OneGenerationOnOonemax(Population pop, int s, double pm, double pc)
             throws CloneNotSupportedException {
-        double[][] res = new double[2][3];
-        int i = 0;
-        while (i < 1) {
-            System.out.println("inicial");
-            for (Individual x : pop.population) {
-                System.out.println(x + " " + x.Onemax());
+        //List<List<Double>> res = new ArrayList<>();
+        /*
+         * System.out.println("inicial"); for(Individual x:pop.population){
+         * System.out.println("("+x+","+(double)x.fitness+")"); }
+         */
+        pop = TournamentSelectionWithoutReplacement(pop, s);
+        /*
+         * System.out.println("torneio"); for(Individual x:pop.population){
+         * System.out.println("("+x+","+(double)x.fitness+")"); }
+         */
+        // System.out.println("crossover");
+        Population pop1 = (Population) pop.clone();
+        for (int j = 0; j < pop.size_population; j += 2) {
+            Individual parent1 = pop.population.get(j);
+            Individual parent2 = pop.population.get(j + 1);
+            double g = generator.nextDouble();
+            if (g < pc) {
+                Population childs = crossoverOnePoint(parent1, parent2);
+                pop1.population.set(j, childs.population.get(0));
+                pop1.population.set(j + 1, childs.population.get(1));
             }
-            Population pop1 = TournamentSelectionWithoutReplacement(pop, s);
-            System.out.println("torneio");
-            for (Individual x : pop1.population) {
-                System.out.println(x + " " + x.Onemax());
-            }
-            System.out.println("crossover");
-            for (int j = 0; j < pop1.size_population; j += 2) {
-                Individual parent1 = pop1.population.get(j);
-                Individual parent2 = pop1.population.get(j + 1);
-                if(generator.nextDouble()<pc){
-                    Population p=crossoverOnePoint(parent1, parent2);
-                    pop.population.set(j, p.population.get(0));
-                    pop.population.set(j+1,p.population.get(1));
-                }
+        }
+        pop = pop1;
+        /*
+         * for(Individual x:pop.population){
+         * System.out.println("("+x+","+(double)x.fitness+")"); }
+         */
+        // System.out.println("bitFlip");
+        for (int j = 0; j < pop.size_population; j++) {
+            pop.population.set(j, bit_flip_mutation(pop.population.get(j), pm));
+            // System.out.println("("+pop.population.get(j)+","+(double)pop.population.get(j).fitness+")");
+        }
+        //res.add(pop.MaxAverageMin());
+        return pop;
+    }
 
-            }
-            for (Individual x : pop.population) {
-                System.out.println(x + " " + x.Onemax()+" "+x.size());
-            }
+    public static List<List<Double>> AGeneticAlgorithmOnOnemax(Population pop, int s, double pm, double pc, int g)
+            throws CloneNotSupportedException {
+        int i = 0;
+        List<List<Double>> res=new ArrayList<>();
+        res.add(pop.MaxAverageMin());
+        while (i < g) {
+            pop=OneGenerationOnOonemax(pop,s,pm,pc);
+            res.add(pop.MaxAverageMin());
             i++;
         }
-        return null;
+        return res;
     }
 
 }
