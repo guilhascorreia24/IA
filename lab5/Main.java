@@ -81,26 +81,26 @@ public class Main {
         int s = Integer.parseInt(sc.next());
         double pm = Double.parseDouble(sc.next());
         double pc = Double.parseDouble(sc.next());
-        List<Algoritmo.Population> Q =new ArrayList<>();
+       /* List<Algoritmo.Population> Q =new ArrayList<>();
         Q.add(pop);
-        Q.add( Algoritmo.OneGenerationOnOonemax(pop, s, pm, pc));
+        Q.add( Algoritmo.OneGenerationOnOonemax(pop, s, pm, pc));*/
 
-        //int g = Integer.parseInt(sc.next());
-        //List<List<Double>> R = Algoritmo.AGeneticAlgorithmOnOnemax(pop, s, pm, pc, g);
+        int g = Integer.parseInt(sc.next());
+        List<List<Double>> R = Algoritmo.AGeneticAlgorithmOnOnemax(pop, s, pm, pc, g);
 
         DecimalFormatSymbols unusualSymbols = new DecimalFormatSymbols();
         unusualSymbols.setDecimalSeparator('.');
         DecimalFormat df = new DecimalFormat("0.00", unusualSymbols);
         int i = 0;
-        for(Algoritmo.Population p:Q){
+        /*for(Algoritmo.Population p:Q){
             List<Double> x=p.MaxAverageMin();
             System.out.println(i + ": " + df.format(x.get(0)) + " " + df.format(x.get(1)) + " " + df.format(x.get(2)));
             i++;
-        }
-        /*for (List<Double> x : R) {
+        }*/
+        for (List<Double> x : R) {
             System.out.println(i + ": " + df.format(x.get(0)) + " " + df.format(x.get(1)) + " " + df.format(x.get(2)));
             i++;
-        }*/
+        }
 
         sc.close();
     }
