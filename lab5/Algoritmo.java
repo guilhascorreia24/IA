@@ -1,4 +1,4 @@
-import java.nio.file.attribute.FileTime;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -46,7 +46,6 @@ public class Algoritmo {
             for (int i = bits.length - 1; i >= 0; i--) {
                 int exp = (bits.length - 1) - i;
                 double n = (bits[i] == '0') ? 0 : Math.pow((bits[i] - '0') * 2, exp);
-                // System.out.println((bits[i]-'0')+" "+exp+" "+bits[i]+" "+n);
                 res += n;
             }
             return (int) (res * res);
@@ -76,7 +75,6 @@ public class Algoritmo {
                 if (population.size() <= i / ChromosomeSize)
                     newIndividual(new Individual(String.valueOf(h)));
                 else {
-                    // System.out.println(i+" "+i/ChromosomeSize);
                     population.get(i / ChromosomeSize).individual += String.valueOf(h);
                     if ((int) ((i + 1) / ChromosomeSize) != (int) (i / ChromosomeSize)) {
                         population.get(i / ChromosomeSize).fitness = population.get(i / ChromosomeSize).Onemax();
@@ -130,7 +128,6 @@ public class Algoritmo {
                     min = x.fitness;
                 med += x.fitness;
             }
-            // System.out.println(max+" "+min+" "+med/size_population);
             res.add(max);
             res.add(med / size_population);
             res.add(min);
@@ -140,15 +137,14 @@ public class Algoritmo {
     }
 
     public static Population tournament(Population pop, int size_population, int inicial_population) {
-        int i = inicial_population;
-        // int size_population = pop.population.size();
+        int i = 0;
         Population tournament_res = new Population();
         while (i < size_population) {
-            Individual individual1 = pop.population.get((int) (inicial_population
-                    + Math.round(generator.nextDouble() * (pop.size_population - 1 - inicial_population))));
-            Individual individual2 = pop.population.get((int) (inicial_population
-                    + Math.round(generator.nextDouble() * (pop.size_population - 1 - inicial_population))));
-            //System.out.println(pop.population.indexOf(individual1) + " " + pop.population.indexOf(individual2));
+            int i1=(int) (inicial_population+ Math.round(generator.nextDouble() * (pop.size_population - 1 - inicial_population)));
+            int i2=(int) (inicial_population+ Math.round(generator.nextDouble() * (pop.size_population - 1 - inicial_population)));
+            Individual individual1 = pop.population.get(i1);
+            Individual individual2 = pop.population.get(i2);
+            System.out.println(pop.population.get(i)+" "+pop.population.get(i).fitness);
             tournament_res.newIndividual(individual1.compareFitnesses(individual2));
             i++;
         }
@@ -201,6 +197,7 @@ public class Algoritmo {
         double size_poppulation = pop.population.size();
         double distance_pointers = total_fitnesss / size_poppulation;
         double roll = generator.nextDouble() * distance_pointers;
+        System.out.println(roll);
         double[] pointers = new double[(int) size_poppulation];
         for (int i = 0; i < size_poppulation; i++) {
             pointers[i] = roll + i * distance_pointers;
@@ -210,11 +207,9 @@ public class Algoritmo {
 
     private static Population RWS(Population pop, double[] pointers) {
         Population keep = new Population();
-        // System.out.println(pointers[0]);
         for (double pointer : pointers) {
             int i = 0;
             double sum_fit = pop.population.get(i).fitness;
-            // System.out.println(pointer);
             while (sum_fit < pointer) {
                 i++;
                 sum_fit += pop.population.get(i).fitness;
@@ -226,13 +221,11 @@ public class Algoritmo {
 
     public static Population crossoverOnePoint(Algoritmo.Individual parent1, Algoritmo.Individual parent2) {
         int point_cross = (int) (1 + Math.round(generator.nextDouble() * (parent1.size() - 1 - 1)));
-        // System.out.println(point_cross+" "+parent1.size()+" "+parent2.size());
         String cross1 = parent1.individual.substring(point_cross, parent1.size());
         String cross2 = parent2.individual.substring(point_cross, parent2.size());
         Individual child1 = new Individual(parent1.individual.substring(0, point_cross) + cross2);
         Individual child2 = new Individual(parent2.individual.substring(0, point_cross) + cross1);
         Population pop = new Population();
-        // System.out.println(point_cross);
         pop.newIndividual(child1);
         pop.newIndividual(child2);
         return pop;
@@ -316,17 +309,7 @@ public class Algoritmo {
 
     public static Population OneGenerationOnOonemax(Population pop, int s, double pm, double pc)
             throws CloneNotSupportedException {
-        //List<List<Double>> res = new ArrayList<>();
-        /*
-         * System.out.println("inicial"); for(Individual x:pop.population){
-         * System.out.println("("+x+","+(double)x.fitness+")"); }
-         */
         pop = TournamentSelectionWithoutReplacement(pop, s);
-        /*
-         * System.out.println("torneio"); for(Individual x:pop.population){
-         * System.out.println("("+x+","+(double)x.fitness+")"); }
-         */
-        // System.out.println("crossover");
         Population pop1 = (Population) pop.clone();
         for (int j = 0; j < pop.size_population; j += 2) {
             Individual parent1 = pop.population.get(j);
@@ -339,16 +322,9 @@ public class Algoritmo {
             }
         }
         pop = pop1;
-        /*
-         * for(Individual x:pop.population){
-         * System.out.println("("+x+","+(double)x.fitness+")"); }
-         */
-        // System.out.println("bitFlip");
         for (int j = 0; j < pop.size_population; j++) {
             pop.population.set(j, bit_flip_mutation(pop.population.get(j), pm));
-            // System.out.println("("+pop.population.get(j)+","+(double)pop.population.get(j).fitness+")");
         }
-        //res.add(pop.MaxAverageMin());
         return pop;
     }
 
